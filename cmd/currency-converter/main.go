@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/rochajg/currency-converter/cmd/currency-converter/router"
+	"github.com/rochajg/currency-converter/cmd/currency-converter/app"
 	"log"
 	"os"
 )
@@ -13,13 +13,12 @@ func main() {
 		port = "8080"
 	}
 
-	err := setup()
+	r := gin.New()
+
+	err := app.Start(r)
 	if err != nil {
 		log.Printf("error initializing app: %v", err)
 	}
-
-	r := gin.New()
-	router.SetupRoutes(r)
 
 	if err := r.Run(":" + port); err != nil {
 		log.Printf("error: %v", err)

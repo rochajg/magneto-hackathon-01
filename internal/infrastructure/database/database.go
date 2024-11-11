@@ -1,13 +1,7 @@
-package main
+package database
 
 import "github.com/rochajg/currency-converter/pkg/database"
 
-func setup() error {
-	err := setupDatabase()
-
-	return err
-}
-
-func setupDatabase() error {
+func InitDB() error {
 	return database.InitDB("currencies.db")
 }
