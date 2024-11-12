@@ -1,0 +1,10 @@
+services:
+  currency-converter:
+    image: rochajg/currency-converter
+    build:
+      context: .
+    restart: unless-stopped
+#    volumes:
+#      - "./db:/app/db"
+    ports:
+      - "0.0.0.0:8080:8080"
