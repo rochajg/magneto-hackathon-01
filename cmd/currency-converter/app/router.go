@@ -9,5 +9,5 @@ func setupRoutes(router *gin.Engine, e *dependency.Entrypoints) {
 	router.GET("/ping", e.HealthCheckEntrypoint.Ping)
 
 	router.POST("/exchange-rate", e.ExchangeRateEntrypoint.AddExchangeRate)
-	router.GET("/exchange-rate", e.ExchangeRateEntrypoint.AddExchangeRate)
+	router.GET("/exchange-rate", e.ExchangeRateEntrypoint.GetExchangeRate)
 }
