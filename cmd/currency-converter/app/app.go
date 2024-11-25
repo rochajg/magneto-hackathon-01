@@ -2,12 +2,15 @@ package app
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/rochajg/currency-converter/cmd/currency-converter/entrypoint"
+	"github.com/rochajg/currency-converter/cmd/currency-converter/app/dependency"
 	"github.com/rochajg/currency-converter/internal/infrastructure/database"
 )
 
 func Start(r *gin.Engine) error {
-	setupEntrypoints(r)
+	setupMiddlewares(r)
+
+	deps := dependency.ResolveDependencies()
+	setupRoutes(r, deps.Entrypoints)
 
 	err := setupDatabase()
 	if err != nil {
@@ -17,10 +20,7 @@ func Start(r *gin.Engine) error {
 	return nil
 }
 
-func setupEntrypoints(r *gin.Engine) {
-	entrypoints := entrypoint.SetupEntrypoints()
-	entrypoints.SetupRoutes(r)
-}
+func setupMiddlewares(r *gin.Engine) {}
 
 func setupDatabase() error {
 	return database.InitDB()
