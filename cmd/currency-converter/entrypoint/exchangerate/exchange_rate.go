@@ -39,3 +39,18 @@ func (e *Entrypoint) AddExchangeRate(c *gin.Context) {
 		"message": "Taxa de câmbio adicionada com sucesso!",
 	})
 }
+
+func (e *Entrypoint) GetExchangeRate(c *gin.Context) {
+	fromCurrency := c.Query("from")
+	toCurrency := c.Query("to")
+
+	rate, err := e.useCase.GetExchangeRate(fromCurrency, toCurrency)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"rate": rate,
+	})
+}
