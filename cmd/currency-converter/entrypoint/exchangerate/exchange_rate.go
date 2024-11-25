@@ -1,0 +1,41 @@
+package exchangerate
+
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/rochajg/currency-converter/internal/domain/usecase"
+	"net/http"
+)
+
+type Entrypoint struct {
+	useCase usecase.ExchangeRateUseCase
+}
+
+func NewExchangeRateEntrypoint(useCase usecase.ExchangeRateUseCase) *Entrypoint {
+	return &Entrypoint{
+		useCase: useCase,
+	}
+}
+
+type Request struct {
+	FromCurrency string  `json:"from_currency"`
+	ToCurrency   string  `json:"to_currency"`
+	Rate         float64 `json:"rate"`
+}
+
+func (e *Entrypoint) AddExchangeRate(c *gin.Context) {
+	var request Request
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := e.useCase.AddExchangeRate(request.FromCurrency, request.ToCurrency, request.Rate)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Taxa de câmbio adicionada com sucesso!",
+	})
+}
