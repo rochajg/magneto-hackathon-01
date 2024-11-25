@@ -10,4 +10,6 @@ func setupRoutes(router *gin.Engine, e *dependency.Entrypoints) {
 
 	router.POST("/exchange-rate", e.ExchangeRateEntrypoint.AddExchangeRate)
 	router.GET("/exchange-rate", e.ExchangeRateEntrypoint.GetExchangeRate)
+
+	router.GET("/convert", e.ExchangeRateEntrypoint.ConvertCurrency)
 }

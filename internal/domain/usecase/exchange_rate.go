@@ -19,3 +19,11 @@ func (u *ExchangeRateUseCase) GetExchangeRate(fromCurrency string, toCurrency st
 func (u *ExchangeRateUseCase) AddExchangeRate(fromCurrency string, toCurrency string, rate float64) error {
 	return u.exchangeRate.AddExchangeRate(fromCurrency, toCurrency, rate)
 }
+
+func (u *ExchangeRateUseCase) ConvertCurrency(fromCurrency string, toCurrency string, amount float64) (float64, error) {
+	rate, err := u.exchangeRate.GetExchangeRate(fromCurrency, toCurrency)
+	if err != nil {
+		return 0, err
+	}
+	return amount * rate, nil
+}

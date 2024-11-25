@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rochajg/currency-converter/internal/domain/usecase"
 	"net/http"
+	"strconv"
 )
 
 type Entrypoint struct {
@@ -52,5 +53,21 @@ func (e *Entrypoint) GetExchangeRate(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"rate": rate,
+	})
+}
+
+func (e *Entrypoint) ConvertCurrency(c *gin.Context) {
+	fromCurrency := c.Query("from")
+	toCurrency := c.Query("to")
+	amount, _ := strconv.ParseFloat(c.Query("amount"), 64)
+
+	convertedAmount, err := e.useCase.ConvertCurrency(fromCurrency, toCurrency, amount)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"converted_amount": convertedAmount,
 	})
 }
