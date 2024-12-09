@@ -2,6 +2,7 @@ package exchangerate
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/rochajg/currency-converter/cmd/currency-converter/app/apperror"
 	"github.com/rochajg/currency-converter/internal/domain/usecase"
 	"net/http"
 	"strconv"
@@ -26,13 +27,20 @@ type Request struct {
 func (e *Entrypoint) AddExchangeRate(c *gin.Context) {
 	var request Request
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		_ = c.Error(
+			apperror.NewAPIError(
+				http.StatusBadRequest,
+				"invalid_request",
+				"Invalid request body",
+				err,
+			),
+		)
 		return
 	}
 
 	err := e.useCase.AddExchangeRate(request.FromCurrency, request.ToCurrency, request.Rate)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		_ = c.Error(err)
 		return
 	}
 
@@ -47,7 +55,7 @@ func (e *Entrypoint) GetExchangeRate(c *gin.Context) {
 
 	rate, err := e.useCase.GetExchangeRate(fromCurrency, toCurrency)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		_ = c.Error(err)
 		return
 	}
 
@@ -63,7 +71,7 @@ func (e *Entrypoint) ConvertCurrency(c *gin.Context) {
 
 	convertedAmount, err := e.useCase.ConvertCurrency(fromCurrency, toCurrency, amount)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		_ = c.Error(err)
 		return
 	}
 
