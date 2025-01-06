@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 	"errors"
-	"fmt"
+	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -23,14 +23,15 @@ func InitDB(dbLocation string) error {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         from_currency TEXT NOT NULL,
         to_currency TEXT NOT NULL,
-        rate REAL NOT NULL
+        rate REAL NOT NULL,
+        date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );`
 	_, err = db.Exec(createTableQuery)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("Banco de dados SQLite conectado e tabela de taxas de câmbio inicializada.")
+	log.Println("Banco de dados SQLite conectado e tabela de taxas de câmbio inicializada.")
 	return nil
 }
 
@@ -41,14 +42,14 @@ func AddExchangeRate(fromCurrency, toCurrency string, rate float64) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Taxa de câmbio adicionada: %s -> %s = %.2f\n", fromCurrency, toCurrency, rate)
+	log.Printf("Taxa de câmbio adicionada: %s -> %s = %.2f\n", fromCurrency, toCurrency, rate)
 	return nil
 }
 
 // Função para consultar a taxa de câmbio entre duas moedas
 func GetExchangeRate(fromCurrency, toCurrency string) (float64, error) {
 	var rate float64
-	query := `SELECT rate FROM exchange_rates WHERE from_currency = ? AND to_currency = ?`
+	query := `SELECT rate FROM exchange_rates WHERE from_currency = ? AND to_currency = ? ORDER BY date_created DESC LIMIT 1`
 	err := db.QueryRow(query, fromCurrency, toCurrency).Scan(&rate)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
